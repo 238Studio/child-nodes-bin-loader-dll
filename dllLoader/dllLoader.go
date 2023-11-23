@@ -2,10 +2,8 @@ package dllLoader
 
 import (
 	"encoding/json"
-	"github.com/UniversalRobotDriveTeam/child-nodes-hdex-loader/loaderService"
+	"github.com/238Studio/child-nodes-hex-loader/loaderService"
 	"os"
-	"path"
-	"strings"
 	"syscall"
 	"unsafe"
 )
@@ -97,7 +95,7 @@ func (loader *DllLoader) LoadHexPackage(dllPath string) (*DllPackage, error) {
 	}
 	// 初始化DllPackage类的name，dll
 	dll := DllPackage{
-		name:                 strings.Split(path.Base(dllPackagePath), ".")[0],
+		name:                 payload.Name,
 		id:                   0,
 		functions:            payload.Functions,
 		functionsReturnTypes: payload.FunctionsReturnTypes,
