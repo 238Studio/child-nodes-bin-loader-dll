@@ -2,7 +2,7 @@ package dllLoader
 
 import (
 	"encoding/json"
-	"github.com/238Studio/child-nodes-hex-loader/loaderService"
+	"github.com/238Studio/child-nodes-bin-loader/loaderService"
 	"os"
 	"syscall"
 	"unsafe"

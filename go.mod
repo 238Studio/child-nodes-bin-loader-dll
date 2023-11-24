@@ -1,6 +1,6 @@
-module github.com/238Studio/child-nodes-hex-loader-dll
+module github.com/238Studio/child-nodes-bin-loader-dll
 
 go 1.21.1
 require (
-	github.com/238Studio/child-nodes-hex-loader v1.0.0 
+	github.com/238Studio/child-nodes-bin-loader v1.0.1
 )
