@@ -1,12 +1,2 @@
-github.com/238Studio/child-nodes-assist v1.0.8 h1:nSL/q0QU7jECaf5x1SmtbHlXlpAjuxdWJGcpSiHIl9E=
-github.com/238Studio/child-nodes-assist v1.0.8/go.mod h1:moO2jhZ3uqBflOqqhZncfQaRDsMj5Iz/vun+1uRpZ6w=
-github.com/238Studio/child-nodes-assist v1.10.1 h1:N/uYuk9th2w86Rr/XENtgqIAIKVBRWkaYmrVuUE9J4M=
 github.com/238Studio/child-nodes-assist v1.10.1/go.mod h1:moO2jhZ3uqBflOqqhZncfQaRDsMj5Iz/vun+1uRpZ6w=
-github.com/238Studio/child-nodes-bin-loader v1.0.1 h1:opGO7MYJICOs0iZuMKa6a7/puFwPyN/eKDGgpdF4QmI=
-github.com/238Studio/child-nodes-bin-loader v1.0.1/go.mod h1:eytYrXshmrwMwUc1pKC6uGtkQihjfTfKMHn/5k7S7MQ=
-github.com/238Studio/child-nodes-bin-loader v1.0.2 h1:5Dx5spoMX0ev0n8ceudwoXyemos1Z9xfKLOS+zA+bx0=
-github.com/238Studio/child-nodes-bin-loader v1.0.2/go.mod h1:eytYrXshmrwMwUc1pKC6uGtkQihjfTfKMHn/5k7S7MQ=
-github.com/238Studio/child-nodes-bin-loader v1.0.3 h1:yAJfTfm1R8HfupK7mUS2Tx6Ehb7CjEwOANfYIinutaY=
 github.com/238Studio/child-nodes-bin-loader v1.0.3/go.mod h1:eytYrXshmrwMwUc1pKC6uGtkQihjfTfKMHn/5k7S7MQ=
-github.com/238Studio/child-nodes-hex-loader v1.0.0 h1:w/R3+3FjVYYAF0pEYBVNyB4PE09qGJ1s3G4TOg3s6iE=
-github.com/238Studio/child-nodes-hex-loader v1.0.0/go.mod h1:cm7CQ5BmcbVcr6zzwAjhrW5BD1zvpWJfeGbbiz5TZPM=

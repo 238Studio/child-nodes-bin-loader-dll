@@ -1,4 +1,4 @@
-module github.com/238Studio/child-nodes-hex-loader-dll
+module github.com/238Studio/child-nodes-bin-loader-dll
 
 go 1.21.1
 
