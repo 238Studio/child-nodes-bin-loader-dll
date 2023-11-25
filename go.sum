@@ -1,4 +1,2 @@
-github.com/238Studio/child-nodes-bin-loader v1.0.0 h1:/TQ4DpXvb1ks7WeHwh45l5WzssrhXt9MKbL4mmQzoyI=
-github.com/238Studio/child-nodes-bin-loader v1.0.0/go.mod h1:u6FokakYxu2V/FnSuzpbLhf5wyrzsBEj3RzAOKMGljY=
-github.com/238Studio/child-nodes-bin-loader v1.0.1 h1:opGO7MYJICOs0iZuMKa6a7/puFwPyN/eKDGgpdF4QmI=
-github.com/238Studio/child-nodes-bin-loader v1.0.1/go.mod h1:eytYrXshmrwMwUc1pKC6uGtkQihjfTfKMHn/5k7S7MQ=
+github.com/238Studio/child-nodes-assist v1.10.1/go.mod h1:moO2jhZ3uqBflOqqhZncfQaRDsMj5Iz/vun+1uRpZ6w=
+github.com/238Studio/child-nodes-bin-loader v1.0.3/go.mod h1:eytYrXshmrwMwUc1pKC6uGtkQihjfTfKMHn/5k7S7MQ=
