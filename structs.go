@@ -1,4 +1,4 @@
-package dllLoader
+package dll
 
 import "syscall"
 

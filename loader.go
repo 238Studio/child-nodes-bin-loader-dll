@@ -1,11 +1,15 @@
-package dllLoader
+package dll
 
 import (
 	"encoding/json"
-	"github.com/238Studio/child-nodes-hex-loader/loaderService"
+	"errors"
 	"os"
 	"syscall"
 	"unsafe"
+
+	_const "github.com/238Studio/child-nodes-assist/const"
+	"github.com/238Studio/child-nodes-assist/util"
+	loader "github.com/238Studio/child-nodes-bin-loader"
 )
 
 // GetName 获取名字
@@ -25,15 +29,23 @@ func (dll *DllPackage) GetID() int {
 // GetFunctionsArgsTypes 获取函数传入参数类型
 // 传入：函数名
 // 传出：传入参数类型数组
-func (dll *DllPackage) GetFunctionsArgsTypes(methodName string) []string {
-	return dll.functionsArgsTypes[methodName]
+func (dll *DllPackage) GetFunctionsArgsTypes(methodName string) ([]string, error) {
+	functionArgs, isExist := dll.functionsArgsTypes[methodName]
+	if !isExist {
+		return nil, util.NewError(_const.CommonException, _const.Bin, errors.New("function not exist"))
+	}
+	return functionArgs, nil
 }
 
 // GetFunctionReturnTypes 获得函数返回值类型列表
 // 传入：函数名
 // 传出：返回值类型列表
-func (dll *DllPackage) GetFunctionReturnTypes(methodName string) []string {
-	return dll.functionsReturnTypes[methodName]
+func (dll *DllPackage) GetFunctionReturnTypes(methodName string) ([]string, error) {
+	functionReturn, isExist := dll.functionsReturnTypes[methodName]
+	if !isExist {
+		return nil, util.NewError(_const.CommonException, _const.Bin, errors.New("function not exist"))
+	}
+	return functionReturn, nil
 }
 
 // GetFunctions 获取支持的函数列表
@@ -46,37 +58,39 @@ func (dll *DllPackage) GetFunctions() []string {
 // GetInfo 获取别的信息
 // 传入：key
 // 传出：value
-func (dll *DllPackage) GetInfo(key string) string {
-	return dll.info[key]
+func (dll *DllPackage) GetInfo(key string) (string, error) {
+	info, isExist := dll.info[key]
+	if !isExist {
+		return "", util.NewError(_const.CommonException, _const.Bin, errors.New("info not exist"))
+	}
+	return info, nil
 }
 
 // Execute 执行函数
 // 传入：方法名，参数
-// 传出：返回值
+// 传出：返回值（通过指针）,错误
 // todo
 func (dll *DllPackage) Execute(method string, args []uintptr, re uintptr) error {
 	// 在dll中获得方法的句柄
 	proc, err := dll.dll.FindProc(method)
 	if err != nil {
-		return err
+		return util.NewError(_const.CommonException, _const.Bin, err)
 	}
 
 	// 如果没有参数则直接无参调用方法
 	if args == nil {
 		_, _, err = proc.Call()
-		return err
 	} else {
 		// 分别传入返回值指针和变量指针
 		_, _, err = proc.Call(re, uintptr(unsafe.Pointer(&args)))
 	}
-	println("传出后")
-	return err
+	return util.NewError(_const.CommonException, _const.Bin, err)
 }
 
-// LoadHexPackage 根据路径加载二进制包并返回句柄
+// LoadBinPackage 根据路径加载二进制包并返回句柄
 // 传入：路径
 // 传出：二进制执行包
-func (loader *DllLoader) LoadHexPackage(dllPath string) (*DllPackage, error) {
+func (dllLoader *DllLoader) LoadBinPackage(dllPath string) (*DllPackage, error) {
 	// dll包对应的描述文件地址
 	dllInfoPath := dllPath + ".json"
 	// dll包地址
@@ -86,12 +100,12 @@ func (loader *DllLoader) LoadHexPackage(dllPath string) (*DllPackage, error) {
 	// 加载json格式的dll信息
 	content, err := os.ReadFile(dllInfoPath)
 	if err != nil {
-		return nil, err
+		return nil, util.NewError(_const.CommonException, _const.Bin, err)
 	}
-	var payload loaderService.HexInfo
+	var payload loader.BinInfo
 	err = json.Unmarshal(content, &payload)
 	if err != nil {
-		return nil, err
+		return nil, util.NewError(_const.CommonException, _const.Bin, err)
 	}
 	// 初始化DllPackage类的name，dll
 	dll := DllPackage{
@@ -104,25 +118,25 @@ func (loader *DllLoader) LoadHexPackage(dllPath string) (*DllPackage, error) {
 		info:                 payload.Info,
 	}
 	// 是否初始化计数器
-	_, ok := loader.dllCounter[dll.name]
+	_, ok := dllLoader.dllCounter[dll.name]
 	if !ok {
-		loader.dllCounter[dll.name] = 0
+		dllLoader.dllCounter[dll.name] = 0
 	}
 	// 根据dll计数器设置一个id
-	dll.id = loader.dllCounter[dll.name]
+	dll.id = dllLoader.dllCounter[dll.name]
 	// 计数器自增
-	loader.dllCounter[dll.name]++
+	dllLoader.dllCounter[dll.name]++
 	return &dll, err
 }
 
 // ReleasePackage 释放dll包
 // 传入：二进制执行包
 // 传出：无
-func (loader *DllLoader) ReleasePackage(hexPackage *loaderService.HexPackage) error {
-	err := (*hexPackage).Execute("Release", nil, 0)
+func (dllLoader *DllLoader) ReleasePackage(binPackage *loader.BinPackage) error {
+	err := (*binPackage).Execute("Release", nil, 0)
 	//todo 常量化
 	if err != nil {
-		return err
+		return util.NewError(_const.CommonException, _const.Bin, err)
 	}
 	return nil
 }
