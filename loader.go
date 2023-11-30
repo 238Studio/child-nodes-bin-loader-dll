@@ -1,7 +1,6 @@
 package dll
 
 import (
-	"encoding/json"
 	"errors"
 	"os"
 	"syscall"
@@ -10,7 +9,10 @@ import (
 	_const "github.com/238Studio/child-nodes-assist/const"
 	"github.com/238Studio/child-nodes-assist/util"
 	loader "github.com/238Studio/child-nodes-bin-loader"
+	jsoniter "github.com/json-iterator/go"
 )
+
+//TODO:恐慌捕获
 
 // GetName 获取名字
 // 传入：无
@@ -69,7 +71,6 @@ func (dll *DllPackage) GetInfo(key string) (string, error) {
 // Execute 执行函数
 // 传入：方法名，参数
 // 传出：返回值（通过指针）,错误
-// todo
 func (dll *DllPackage) Execute(method string, args []uintptr, re uintptr) error {
 	// 在dll中获得方法的句柄
 	proc, err := dll.dll.FindProc(method)
@@ -90,23 +91,29 @@ func (dll *DllPackage) Execute(method string, args []uintptr, re uintptr) error 
 // LoadBinPackage 根据路径加载二进制包并返回句柄
 // 传入：路径
 // 传出：二进制执行包
-func (dllLoader *DllLoader) LoadBinPackage(dllPath string) (*DllPackage, error) {
+func (dllLoader *DllLoader) LoadBinPackage(path string) (int, error) {
 	// dll包对应的描述文件地址
-	dllInfoPath := dllPath + ".json"
+	dllInfoPath := path + ".json"
 	// dll包地址
-	dllPackagePath := dllPath + ".dll"
+	dllPackagePath := path + ".dll"
 	// 获取dll包句柄
 	h := syscall.MustLoadDLL(dllPackagePath)
 	// 加载json格式的dll信息
 	content, err := os.ReadFile(dllInfoPath)
 	if err != nil {
-		return nil, util.NewError(_const.CommonException, _const.Bin, err)
+		return 0, util.NewError(_const.CommonException, _const.Bin, err)
 	}
-	var payload loader.BinInfo
+
+	var (
+		payload loader.BinInfo
+		json    = jsoniter.ConfigCompatibleWithStandardLibrary
+	)
+	//json反序列化配置文件
 	err = json.Unmarshal(content, &payload)
 	if err != nil {
-		return nil, util.NewError(_const.CommonException, _const.Bin, err)
+		return 0, util.NewError(_const.CommonException, _const.Bin, err)
 	}
+
 	// 初始化DllPackage类的name，dll
 	dll := DllPackage{
 		name:                 payload.Name,
@@ -122,26 +129,39 @@ func (dllLoader *DllLoader) LoadBinPackage(dllPath string) (*DllPackage, error) 
 	if !ok {
 		dllLoader.dllCounter[dll.name] = 0
 	}
+
 	// 根据dll计数器设置一个id
 	dll.id = dllLoader.dllCounter[dll.name]
+
 	// 计数器自增
 	dllLoader.dllCounter[dll.name]++
+
+	//将dll package加入集合
+	//先检测是否存在map
 	_, ok = dllLoader.Dlls[dll.name]
 	if !ok {
 		dllLoader.Dlls[dll.name] = make(map[int]*DllPackage)
 	}
 	dllLoader.Dlls[dll.name][dll.id] = &dll
-	return &dll, err
+
+	return dll.id, err
 }
 
 // ReleasePackage 释放dll包
 // 传入：二进制执行包
 // 传出：无
-func (dllLoader *DllLoader) ReleasePackage(binPackage *loader.BinPackage) error {
-	err := (*binPackage).Execute("Release", nil, 0)
-	//todo 常量化
+func (dllLoader *DllLoader) ReleasePackage(name string, id int) error {
+	//通过name和id获取dll package
+	dllPackage := dllLoader.Dlls[name][id]
+
+	//对dll执行释放函数
+	err := dllPackage.Execute("Release", nil, 0)
 	if err != nil {
 		return util.NewError(_const.CommonException, _const.Bin, err)
 	}
+
+	//从集合中移除package
+	delete(dllLoader.Dlls[name], id)
+
 	return nil
 }

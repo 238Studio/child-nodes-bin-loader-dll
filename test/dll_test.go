@@ -4,7 +4,7 @@ import (
 	"testing"
 	"unsafe"
 
-	dll "github.com/238Studio/child-nodes-hex-loader-dll"
+	dll "github.com/238Studio/child-nodes-bin-loader-dll"
 )
 
 func TestName(t *testing.T) {
@@ -12,7 +12,7 @@ func TestName(t *testing.T) {
 	a := "helloworld"
 	args[0] = uintptr(unsafe.Pointer(&a))
 	app := dll.InitDllLoader()
-	hexPackage, err := app.LoadBinPackage("./test")
+	id, err := app.LoadBinPackage("./test")
 	if err != nil {
 		println(err.Error())
 		return
@@ -21,8 +21,12 @@ func TestName(t *testing.T) {
 	var str = "外部"
 	println(&str)
 	re[0] = (uintptr)(unsafe.Pointer(&str))
-	err = hexPackage.Execute("Test1", args, uintptr(unsafe.Pointer(&re)))
+
+	binPackage := app.Dlls["test"][id]
+	err = binPackage.Execute("Test1", args, uintptr(unsafe.Pointer(&re)))
 	//	re := execute[0]
 	println("mew")
 	println(*(*string)(unsafe.Pointer(re[0])))
+
+	app.ReleasePackage("test", id)
 }
