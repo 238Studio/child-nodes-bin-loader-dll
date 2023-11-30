@@ -126,6 +126,11 @@ func (dllLoader *DllLoader) LoadBinPackage(dllPath string) (*DllPackage, error) 
 	dll.id = dllLoader.dllCounter[dll.name]
 	// 计数器自增
 	dllLoader.dllCounter[dll.name]++
+	_, ok = dllLoader.Dlls[dll.name]
+	if !ok {
+		dllLoader.Dlls[dll.name] = make(map[int]*DllPackage)
+	}
+	dllLoader.Dlls[dll.name][dll.id] = &dll
 	return &dll, err
 }
 
