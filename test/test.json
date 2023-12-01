@@ -1,4 +1,5 @@
 {
+  "Name": "test",
   "Functions": ["testFunc"],
   "FunctionsArgsTypes":{
     "testFunc":["string","string"]
