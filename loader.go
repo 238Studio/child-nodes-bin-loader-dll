@@ -190,3 +190,24 @@ func (dllLoader *DllLoader) ReleasePackage(name string, id int) (err error) {
 
 	return nil
 }
+
+// GetBinPackage 获取dll包
+// 传入：包名，包id
+// 传出：dll包
+func (dllLoader *DllLoader) GetBinPackage(name string, id int) (dllPackage *DllPackage, err error) {
+	//捕获恐慌
+	defer func() {
+		if er := recover(); er != nil {
+			//特例panic,级别非fatal,牵涉到cgo
+			err = util.NewError(_const.CommonException, _const.Bin, errors.New(er.(string)))
+		}
+	}()
+
+	//通过name和id获取dll package
+	dllPackage, isExist := dllLoader.Dlls[name][id]
+	if !isExist {
+		return nil, util.NewError(_const.CommonException, _const.Bin, errors.New("package not exist"))
+	}
+
+	return dllPackage, nil
+}

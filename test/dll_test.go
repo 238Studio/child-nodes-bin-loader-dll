@@ -12,7 +12,7 @@ func TestName(t *testing.T) {
 	a := "helloworld"
 	args[0] = uintptr(unsafe.Pointer(&a))
 	app := dll.InitDllLoader()
-	id, err := app.LoadBinPackage("./test")
+	name, id, err := app.LoadBinPackage("./test")
 	if err != nil {
 		println(err.Error())
 		return
@@ -22,7 +22,7 @@ func TestName(t *testing.T) {
 	println(&str)
 	re[0] = (uintptr)(unsafe.Pointer(&str))
 
-	binPackage := app.Dlls["test"][id]
+	binPackage, err := app.GetBinPackage(name, id)
 	err = binPackage.Execute("Test1", args, uintptr(unsafe.Pointer(&re)))
 	//	re := execute[0]
 	println("mew")
