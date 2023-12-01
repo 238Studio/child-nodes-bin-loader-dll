@@ -1,3 +1,5 @@
+//go:build windows
+
 package dll
 
 func InitDllLoader() *DllLoader {
