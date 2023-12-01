@@ -12,8 +12,6 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-//TODO:恐慌捕获
-
 // GetName 获取名字
 // 传入：无
 // 传出：包名称 这个是全局唯一的
@@ -99,7 +97,7 @@ func (dll *DllPackage) Execute(method string, args []uintptr, re uintptr) (err e
 // LoadBinPackage 根据路径加载二进制包并返回句柄
 // 传入：路径
 // 传出：二进制执行包
-func (dllLoader *DllLoader) LoadBinPackage(path string) (id int, err error) {
+func (dllLoader *DllLoader) LoadBinPackage(path string) (name string, id int, err error) {
 	//捕获恐慌
 	defer func() {
 		if er := recover(); er != nil {
@@ -117,7 +115,7 @@ func (dllLoader *DllLoader) LoadBinPackage(path string) (id int, err error) {
 	// 加载json格式的dll信息
 	content, err := os.ReadFile(dllInfoPath)
 	if err != nil {
-		return 0, util.NewError(_const.CommonException, _const.Bin, err)
+		return "", 0, util.NewError(_const.CommonException, _const.Bin, err)
 	}
 
 	var (
@@ -127,7 +125,7 @@ func (dllLoader *DllLoader) LoadBinPackage(path string) (id int, err error) {
 	//json反序列化配置文件
 	err = json.Unmarshal(content, &payload)
 	if err != nil {
-		return 0, util.NewError(_const.CommonException, _const.Bin, err)
+		return "", 0, util.NewError(_const.CommonException, _const.Bin, err)
 	}
 
 	// 初始化DllPackage类的name，dll
@@ -160,7 +158,7 @@ func (dllLoader *DllLoader) LoadBinPackage(path string) (id int, err error) {
 	}
 	dllLoader.Dlls[dll.name][dll.id] = &dll
 
-	return dll.id, err
+	return dll.name, dll.id, err
 }
 
 // ReleasePackage 释放dll包
